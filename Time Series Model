@@ -1,0 +1,65 @@
+#Yang 2019/3/16
+import pandas as pd
+from statsmodels.graphics.tsaplots import *
+from statsmodels.tsa import stattools
+from statsmodels.tsa import arima_model
+import matplotlib.pyplot as plt
+from matplotlib.font_manager import FontProperties
+font=FontProperties(fname='C:\Windows\Fonts\msyh.ttf')
+from arch.unitroot import ADF
+import numpy as np
+
+#The attribute of TS
+SH_data=pd.read_table('TRD_Index.txt',index_col='Trddt')
+SH_data=SH_data[SH_data['Indexcd']==1]
+SH_data.index=pd.to_datetime(SH_data.index)
+SH_return=SH_data['Retindex']
+SH_acfs=stattools.acf(SH_return)
+SH_acfs_close=stattools.acf(SH_data['Clsindex'])
+SH_pacfs=stattools.pacf(SH_return)
+'''
+plt.plot(SH_return)
+ax1=plt.subplot(211)
+ax2=plt.subplot(212)
+plot_acf(SH_acfs,lags=30,title='Return ACFs',ax=ax1)
+plot_pacf(SH_pacfs,lags=30,title='Return PACFs',ax=ax2)
+plot_acf(SH_acfs_close,lags=30,title='Close ACFs')
+
+adfSHRet=ADF(SH_return)
+adfSHClose=ADF(SH_data['Clsindex'])
+print(adfSHRet.summary())
+print(adfSHClose.summary())
+'''
+#The Model of TS
+CPI=pd.read_csv('CPI.csv',index_col='time')
+CPI=CPI.dropna()
+CPI.index=pd.to_datetime(CPI.index)
+CPItrain=CPI[:]
+acfCPItrain=stattools.acf(CPItrain)
+#plot_acf(acfCPItrain,title='CPI Auto')
+
+adfCPI=ADF(CPItrain)
+print(adfCPI.summary())
+#Is it a white noise?
+LjungBox=stattools.q_stat(acfCPItrain[:12],len(CPItrain))
+for i in LjungBox[1]:
+    if i>0.005:
+        print('white noise')
+        break
+    else:
+        print('pass')
+#'''
+model1=arima_model.ARIMA(CPItrain,order=(2,0,2)).fit()
+model2=arima_model.ARIMA(CPItrain,order=(3,0,1)).fit()
+model3=arima_model.ARIMA(CPItrain,order=(3,0,2)).fit()
+print(model1.summary(),'\t')
+print(model2.summary(),'\t')
+print(model3.summary(),'\t')
+#'''
+stdresid=model3.resid/np.sqrt(model3.sigma2)
+stdresid.plot()
+plot_acf(stdresid)
+
+print(model3.forecast(3)[0],CPI[:3])
+plt.figure()
+plt.plot(model3.forecast(100)[0])
