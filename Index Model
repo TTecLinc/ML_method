@@ -1,3 +1,4 @@
+#Yang 2019/3/16
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -5,12 +6,12 @@ import statsmodels.api as sm
 
 #Fama-French Index Model
 '''
-huaxia_data=pd.read_table('D:\\python_data\\Task1\\stock.txt')
+huaxia_data=pd.read_table('...')
 huaxia_data=huaxia_data[huaxia_data['Stkcd']==600015]
 huaxia_data.index=pd.to_datetime(huaxia_data['Trddt'])
 huaxia_data=huaxia_data['Dretwd']
 
-factor_data=pd.read_table('D:\\python_data\\Task1\\ThreeFactors.txt')
+factor_data=pd.read_table('...')
 factor_data.index=pd.to_datetime(factor_data['TradingDate'])
 factor_data=factor_data[huaxia_data.index[0]:]
 factor_data=factor_data.iloc[:,[3,5,7]]
@@ -32,8 +33,8 @@ print(result.summary())
 parameters.name='Parameters'
 '''
 
-stock_data=pd.read_csv('D:\\python_data\\Task1\\TRD_Index_20.csv')
-xin_an_data=pd.read_csv('D:\\python_data\\Task1\\xin_an.csv').iloc[:,1:]
+stock_data=pd.read_csv('...')
+xin_an_data=pd.read_csv('...').iloc[:,1:]
 #Risk-free interest rate
 R_f=(1+0.036)**(1/360)-1
 #remove the volume is zero
